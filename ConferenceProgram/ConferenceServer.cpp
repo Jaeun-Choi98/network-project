@@ -2,7 +2,7 @@
 
 #define SERVERPORT 9000
 #define BUFSIZE 512
-#define NAMESIZE 11
+#define NAMESIZE 20
 
 // 작업 쓰레드
 DWORD WINAPI WorkerThread(LPVOID arg);
@@ -153,6 +153,7 @@ DWORD WINAPI WorkerThread(LPVOID arg)
 		RemoveSocketInfo(ptr);
 		return 0;
 	}
+
 	if (!ptr->checkName) {
 		ptr->recvbytes = ptr->namebytes = cbTransferred;
 		ptr->sendbytes = 0;
@@ -187,9 +188,9 @@ DWORD WINAPI WorkerThread(LPVOID arg)
 		DWORD sendbytes;
 		SOCKETINFO* cur = SocketInfoList;
 		int curSendbytes = ptr->sendbytes;
-		int curRecvbytes = ptr->recvbytes;
+		int curRecvbytes = ptr->recvbytes - ptr->sendbytes;
 		char curBuf[BUFSIZE + 1];
-		strncpy(curBuf, ptr->buf, ptr->recvbytes);
+		strncpy(curBuf, ptr->buf + curSendbytes, curRecvbytes);
 		char c = ':';
 		if (!ptr->checkName) {
 			ptr->checkName = true;
@@ -207,7 +208,7 @@ DWORD WINAPI WorkerThread(LPVOID arg)
 					if (WSAGetLastError() != WSA_IO_PENDING) {
 						err_display("WSASend()");
 					}
-					return 1;
+					return 0;
 				}
 				cur = cur->next;
 			}
@@ -229,7 +230,7 @@ DWORD WINAPI WorkerThread(LPVOID arg)
 					if (WSAGetLastError() != WSA_IO_PENDING) {
 						err_display("WSASend()");
 					}
-					return 1;
+					return 0;
 				}
 				cur = cur->next;
 			}
@@ -251,7 +252,7 @@ DWORD WINAPI WorkerThread(LPVOID arg)
 			if (WSAGetLastError() != WSA_IO_PENDING) {
 				err_display("WSARecv()");
 			}
-			return 1;
+			return 0;
 		}
 	}
 

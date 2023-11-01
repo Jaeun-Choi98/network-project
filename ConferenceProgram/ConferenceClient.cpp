@@ -8,7 +8,7 @@ DWORD WINAPI ProcessSend(LPVOID arg);
 
 char SERVERIP[20];
 int SERVERPORT;
-char name[10];
+char name[20];
 
 int main(int argc, char* argv[]) {
 
@@ -59,6 +59,7 @@ int main(int argc, char* argv[]) {
 
 	CloseHandle(hThread[0]);
 	CloseHandle(hThread[1]);
+	closesocket(sock);
 	WSACleanup();
 	return 0;
 }
@@ -81,7 +82,6 @@ DWORD WINAPI ProcessRecv(LPVOID arg) {
 		buf[retval] = '\0';
 		printf("%s\n", buf);
 	}
-	closesocket(recv_sock);
 }
 
 DWORD WINAPI ProcessSend(LPVOID arg) {
@@ -113,5 +113,4 @@ DWORD WINAPI ProcessSend(LPVOID arg) {
 			break;
 		}
 	}
-	closesocket(send_sock);
 }
