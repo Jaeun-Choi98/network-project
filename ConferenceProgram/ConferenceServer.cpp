@@ -16,6 +16,7 @@ typedef struct _SOCKETINFO {
 	char buf[BUFSIZE + 1];
 	int recvbytes;
 	int sendbytes;
+	int checkAll;
 	WSABUF wsabuf;
 	_SOCKETINFO* next;
 } SOCKETINFO;
@@ -99,6 +100,7 @@ int main(int argc, char* argv[]) {
 		ptr->recvbytes = ptr->sendbytes = ptr->namebytes = 0;
 		ptr->wsabuf.buf = ptr->buf;
 		ptr->wsabuf.len = BUFSIZE;
+		ptr->checkAll = 0;
 		ptr->next = NULL;
 
 		// 소켓인포 리스트에 추가
@@ -178,12 +180,12 @@ DWORD WINAPI WorkerThread(LPVOID arg)
 		fputs("\n", pFile);
 	}
 	else {
-		ptr->sendbytes += cbTransferred;
-		//ptr->recvbytes = 0;
+		//ptr->sendbytes += cbTransferred;
+		ptr->recvbytes = 0;
 	}
 
 
-	if (ptr->recvbytes > ptr->sendbytes) {
+	if (ptr->recvbytes != 0) {
 		// 데이터 보내기
 		DWORD sendbytes;
 		SOCKETINFO* cur = SocketInfoList;
@@ -210,6 +212,7 @@ DWORD WINAPI WorkerThread(LPVOID arg)
 					}
 					return 0;
 				}
+				if(ptr!=cur) cur->checkAll += 1;
 				cur = cur->next;
 			}
 		}
@@ -232,13 +235,18 @@ DWORD WINAPI WorkerThread(LPVOID arg)
 					}
 					return 0;
 				}
+				if (ptr != cur) cur->checkAll += 1;
 				cur = cur->next;
 			}
 		}
 	}
 	else {
+		if (ptr->checkAll > 0) {
+			ptr->checkAll -= 1;
+			return 0;
+		}
 		// 데이터 받기
-		ptr->recvbytes = 0;
+		//ptr->recvbytes = 0;
 
 		memset(&ptr->overlapped, 0, sizeof(ptr->overlapped));
 		ptr->wsabuf.buf = ptr->buf;
