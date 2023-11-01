@@ -51,5 +51,6 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-# x64 폴더
+# ++++
 x64/
+.vs/
