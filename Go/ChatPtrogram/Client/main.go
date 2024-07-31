@@ -48,7 +48,7 @@ func main() {
 	sendMessage(conn, setNameMessage)
 
 	// 메시지 수신 및 전송 고루틴 시작
-	go receiveMessages(conn)
+	go receiveMessage(conn)
 
 	// 사용자 입력 처리
 	for {
@@ -85,7 +85,7 @@ func sendMessage(conn net.Conn, msg Message) {
 }
 
 // 서버로부터 메시지를 수신
-func receiveMessages(conn net.Conn) {
+func receiveMessage(conn net.Conn) {
 	scanner := bufio.NewScanner(conn)
 	for scanner.Scan() {
 		var msg Message

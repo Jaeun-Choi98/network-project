@@ -43,7 +43,7 @@ func main() {
 	defer listener.Close()
 	fmt.Println("Server started on port 8080")
 
-	go handleMessages()
+	go sendMessage()
 
 	for {
 		conn, err := listener.Accept()
@@ -63,6 +63,17 @@ func handleConnection(conn net.Conn) {
 	mutex.Unlock()
 	fmt.Println("New client connected:", conn.RemoteAddr().String())
 
+	receiveMessage(client, conn)
+
+	mutex.Lock()
+	delete(clients, client)
+	mutex.Unlock()
+	conn.Close()
+	fmt.Println("Client disconnected:", conn.RemoteAddr().String())
+}
+
+// 연결이 종료될 때까지, 수신
+func receiveMessage(client *Client, conn net.Conn) {
 	scanner := bufio.NewScanner(conn)
 	for scanner.Scan() {
 		var msg Message
@@ -74,12 +85,6 @@ func handleConnection(conn net.Conn) {
 
 		handleMessage(client, msg)
 	}
-
-	mutex.Lock()
-	delete(clients, client)
-	mutex.Unlock()
-	conn.Close()
-	fmt.Println("Client disconnected:", conn.RemoteAddr().String())
 }
 
 func handleMessage(client *Client, msg Message) {
@@ -108,7 +113,7 @@ func handleMessage(client *Client, msg Message) {
 	}
 }
 
-func handleMessages() {
+func sendMessage() {
 	for {
 		msg := <-broadcast
 		data, err := json.Marshal(msg)
