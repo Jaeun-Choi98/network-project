@@ -18,6 +18,7 @@ type Client struct {
 type Message struct {
 	Type    string      `json:"type"`
 	Payload interface{} `json:"payload"`
+	Sender  string      `json:"sender"`
 }
 
 // 클라이언트 이름 설정 페이로드
@@ -94,6 +95,11 @@ func handleMessage(client *Client, msg Message) {
 		data, _ := json.Marshal(msg.Payload)
 		json.Unmarshal(data, &payload)
 		client.name = payload.Name
+
+		// 아래 코드처럼 해도 되지만, 필드가 여러 개일 경우 위의 방법이 더 편리함.
+		// type이 interface{}인 경우, 역직렬화 시 map[string]interface{}로 변환(conversion)된다.
+		// client.name = msg.Payload.(map[string]interface{})["name"].(string)
+
 		fmt.Println("Client set name:", client.name)
 
 	case "CHAT_MESSAGE":
@@ -106,6 +112,7 @@ func handleMessage(client *Client, msg Message) {
 			Payload: ChatMessagePayload{
 				Message: client.name + ": " + payload.Message,
 			},
+			Sender: client.name,
 		}
 
 	default:
@@ -124,6 +131,9 @@ func sendMessage() {
 		data = append(data, '\n')
 		mutex.Lock()
 		for client := range clients {
+			if client.name == msg.Sender {
+				continue
+			}
 			_, err := client.conn.Write(data)
 			if err != nil {
 				fmt.Println("Error sending message to", client.name)
