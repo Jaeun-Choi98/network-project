@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net"
@@ -42,7 +43,7 @@ func main() {
 		return
 	}
 	defer listener.Close()
-	fmt.Println("Server started on port 8080")
+	fmt.Println("Server started on port 5000")
 
 	go sendMessage()
 
@@ -78,7 +79,8 @@ func receiveMessage(client *Client, conn net.Conn) {
 	scanner := bufio.NewScanner(conn)
 	for scanner.Scan() {
 		var msg Message
-		err := json.Unmarshal(scanner.Bytes(), &msg)
+		fmt.Println(string(scanner.Bytes()))
+		err := json.Unmarshal(bytes.TrimPrefix(scanner.Bytes(), []byte{0xEF, 0xBB, 0xBF}), &msg)
 		if err != nil {
 			fmt.Println("Error parsing message:", err)
 			continue
