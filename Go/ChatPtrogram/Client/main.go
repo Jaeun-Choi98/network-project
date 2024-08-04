@@ -27,7 +27,7 @@ type ChatMessagePayload struct {
 
 func main() {
 	// 서버에 연결
-	conn, err := net.Dial("tcp", "localhost:8080")
+	conn, err := net.Dial("tcp", "localhost:5000")
 	if err != nil {
 		fmt.Println("Error connecting to server:", err)
 		return

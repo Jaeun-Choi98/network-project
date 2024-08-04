@@ -36,7 +36,7 @@ var broadcast = make(chan Message)
 var mutex = &sync.Mutex{}
 
 func main() {
-	listener, err := net.Listen("tcp", ":8080")
+	listener, err := net.Listen("tcp", ":5000")
 	if err != nil {
 		fmt.Println("Error starting server:", err)
 		return
