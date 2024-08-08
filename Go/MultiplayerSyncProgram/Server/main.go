@@ -48,6 +48,8 @@ func main() {
 	defer listener.Close()
 	fmt.Println("Server started on port 5001")
 
+	go sendMessage()
+
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
@@ -104,6 +106,12 @@ func handleMessage(client *Client, msg Message) {
 		json.Unmarshal(data, &payload)
 		client.playerId = payload.PlayerId
 		//fmt.Println("Client set name:", client.playerId)
+		broadcast <- Message{
+			Type: "CONNECT",
+			Payload: ConnectPayload{
+				PlayerId: client.playerId,
+			},
+		}
 
 	case "PLAYER_TRANSFORM":
 		broadcast <- msg
@@ -124,9 +132,6 @@ func sendMessage() {
 		data = append(data, '\n')
 		mutex.Lock()
 		for client := range clients {
-			if msg.Type == "PLAYER_TRANSFORM" && client.playerId == msg.Payload.(*PlayerTransformPayload).PlayerId {
-				continue
-			}
 			_, err := client.conn.Write(data)
 			if err != nil {
 				fmt.Println("Error sending message to", client.playerId)
