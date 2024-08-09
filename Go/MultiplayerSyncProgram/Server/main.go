@@ -31,6 +31,10 @@ type PlayerTransformPayload struct {
 	PlayerId int       `json:"playerId"`
 	Position []float64 `json:"position"`
 	Rotation []float64 `json:"rotation"`
+	IsJump   bool      `json:"isJump"`
+	IsRoll   bool      `json:"isRoll"`
+	H        float64   `json:"h"`
+	V        float64   `json:"v"`
 }
 
 var (
