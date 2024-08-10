@@ -17,3 +17,11 @@
 #### 소개
 Jaeun-Choi98/GameWorld 프로젝트에서 채팅 기능을 구현하기 위해 설계한 채팅 서버입니다. 
 실행 화면은 https://github.com/Jaeun-Choi98/GameWorld README.md 소개 글에 있는 게임 영상 링크에서 확인하실 수 있습니다.
+
+<br>
+<br>
+
+### Unity 오브젝트 동기화 서버(Go/MultiplayerSyncProgram)
+#### 소개 
+Jaeun-Choi98/GameWorld 프로젝트에서 오브젝트 동기화 기능을 구현하기 위해 설계한 서버입니다.
+실행 화면은 https://github.com/Jaeun-Choi98/GameWorld README.md 소개 글에 있는 게임 영상 링크에서 확인하실 수 있습니다.
